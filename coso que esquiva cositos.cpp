@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #include <list>
+#include <iostream>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ using namespace std;
 #define izquierda 75
 #define derecha 77
 #define abajo 80
+#define ENTER 13
 
 void gotoxy(int x, int y){
     HANDLE hCon;
@@ -188,18 +190,45 @@ bool BALA::limite(){
     if(y==2) return true;
     return false;
 }
-
-
-
+void finalJuego(){
+    system("cls");
+    pintar_bordes();
+    gotoxy(33,16);printf("Fin del juego");
+    gotoxy(25,17);system("pause");
+};
+void prepararJuego();
+void juego();
+int menu();
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------ACA-ESTÁ-EL-MAIN-----------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 int main(){
    // system("color 90");
     system("mode con: cols=80 lines=35");
+menu();
 
-    eliminarCosito();
-    pintar_bordes();
+if( menu()==11 ){
+    juego();
+finalJuego();
+
+}
+
+
+
+
+
+
+    return 0;
+}
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------ACA-ESTÁ-EL-MAIN-----------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void juego(){
     NAVE cosa1(38,20,3,3);
     cosa1.dibujar();
     cosa1.dibujar_vida();
+
 
     list<COSOSQUECAEN*>A;
     list<COSOSQUECAEN*>::iterator itCosito;
@@ -213,7 +242,6 @@ int main(){
 
     list<BALA*>B;
     list<BALA*>::iterator it;
-
     bool game_over=false;
     while(!game_over){
 
@@ -271,6 +299,38 @@ int main(){
 
         Sleep(20);
     }
+};
+void prepararJuego(){
 
-    return 0;
-}
+
+    eliminarCosito();
+    pintar_bordes();
+
+};
+int menu(){
+
+    prepararJuego();
+
+    gotoxy(2,3);printf("Presione la tecla ENTER para iniciar el juego \n");
+    gotoxy(2,5);printf("Presione la tecla I para ver las instrucciones");
+    gotoxy(2,7);printf("Presione otra tecla para salir \n");
+    char tecla=getch();
+     if(tecla==ENTER){
+        system("cls");
+        prepararJuego();
+        return 11;
+    }else{
+        if(tecla=='i'){
+            gotoxy(2,3);printf("Presione las teclas de flechas para moverse          ");
+            gotoxy(2,5);printf("Presione la v para disparar                            ");
+            gotoxy(2,7);printf("Presione la tecla e para perder uno de salud");
+            gotoxy(2,9);system("pause");
+            return 11;
+        }
+    }
+
+
+
+
+
+};
