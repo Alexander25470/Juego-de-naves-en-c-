@@ -2,6 +2,9 @@
 #include <windows.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <list>
+
+using namespace std;
 
 #define arriba 72
 #define izquierda 75
@@ -33,6 +36,7 @@ public:
     NAVE(int _x, int _y, int _health, int _lifes);
     int x_navePublica(){return x;}
     int y_navePublica(){return y;}
+    int lifes_pub(){return lifes;}
     void dibujar();//dibuja la nave
     void borrar();//borra la nave
     void mover();//mueve la nave
@@ -58,19 +62,20 @@ public:
         void pintar();
         void mover();
         void chocar(class NAVE &cosita);
+        int x_cosopub(){return x;}
+        int y_cosopub(){return y;}
 
 };
 void COSOSQUECAEN::chocar(class NAVE &cosita){
     if(x>=cosita.x_navePublica()&& x<=cosita.x_navePublica()+2 && y>=cosita.y_navePublica() && y<=cosita.y_navePublica()+1){
-        //f
-        Sleep(100);
+        //Sleep(500);
         cosita.perder_health();
         cosita.borrar();
         cosita.dibujar();
         cosita.dibujar_vida();
         x=rand()%76+2;
         y=2;
-        Sleep(100);
+
     }
 }
 
@@ -102,10 +107,10 @@ void NAVE::mover(){
 
             char tecla=getch();
             borrar();
-            if((tecla=='a' || tecla==izquierda || tecla=='A')&&x>2){x--;}
-            if((tecla=='d' || tecla==derecha || tecla=='D')&&x<75){x++;}
-            if((tecla=='w' || tecla==arriba || tecla=='W')&&y>2){y--;}
-            if((tecla=='s' || tecla==abajo || tecla=='S') &&y<31){y++;}
+            if((tecla=='a' || tecla==izquierda)&&x>2){x--;}
+            if((tecla=='d' || tecla==derecha)&&x<75){x++;}
+            if((tecla=='w' || tecla==arriba)&&y>2){y--;}
+            if((tecla=='s' || tecla==abajo) &&y<31){y++;}
             if(tecla=='e' || tecla=='E')health--;
             dibujar();
             dibujar_vida();
@@ -136,19 +141,19 @@ void NAVE::perder_vida(){
         gotoxy(x-1,y);printf(" **");
         gotoxy(x-1,y+1);printf("****");
         Sleep(300);
-Sleep(100);
+
         borrar();
         gotoxy(x-3,y);printf("   * * ");
         gotoxy(x-3,y+1);printf(" * * * * ");
-Sleep(100);
+
         Sleep(300);
         gotoxy(x-3,y);printf("      ");
         gotoxy(x-3,y+1);printf("         ");
-Sleep(100);
+
         gotoxy(x-3,y);printf("Te moriste");
         Sleep(300);
         gotoxy(x-3,y);printf("          ");
-Sleep(100);
+
         lifes--;
         health=3;
         dibujar_vida();
@@ -165,29 +170,106 @@ void NAVE::dibujar_vida(){
     }
 }
 
+class BALA{
+    int x,y;
+public:
+    BALA(int _x, int _y):x(_x),y(_y){}
+    int x_balapub(){return x;}
+    int y_balapub(){return y;}
+    void mover();
+    bool limite();
+};
+void BALA::mover(){
+    gotoxy(x,y);printf(" ");
+    y--;
+    gotoxy(x,y);printf("%c",94);
+}
+bool BALA::limite(){
+    if(y==2) return true;
+    return false;
+}
+
+
+
 int main(){
    // system("color 90");
     system("mode con: cols=80 lines=35");
 
     eliminarCosito();
     pintar_bordes();
-    NAVE cosa1(38,27,3,3);
+    NAVE cosa1(38,20,3,3);
     cosa1.dibujar();
     cosa1.dibujar_vida();
 
-    COSOSQUECAEN cosito1(10,4),cosito2(4,8),cosito3(15,10),cosito4(20,20),cosito5(10,10);
+    list<COSOSQUECAEN*>A;
+    list<COSOSQUECAEN*>::iterator itCosito;
+    for(int i=0; i<5;i++){
+        A.push_back(new COSOSQUECAEN( rand()%76+2,rand()%20+4  ));
+    }
+
+
+    int puntos=0;
+
+
+    list<BALA*>B;
+    list<BALA*>::iterator it;
 
     bool game_over=false;
     while(!game_over){
 
-            cosito1.mover();cosito1.chocar(cosa1);
-            cosito2.mover();cosito2.chocar(cosa1);
-            cosito3.mover();cosito3.chocar(cosa1);
-            cosito4.mover();cosito4.chocar(cosa1);
+    gotoxy(1,0); printf("Puntos: %d", puntos);
+
+            if(kbhit()){
+                 char tecla=getch();
+                 if((tecla=='v' || tecla=='V')){
+                    B.push_back(new BALA(cosa1.x_navePublica()+1, cosa1.y_navePublica()-1));
+
+                 }
+
+            };
+            for(it=B.begin();it!=B.end();it++){
+                (*it)->mover();
+                if((*it)->limite() ){
+                    gotoxy( (*it)->x_balapub(),(*it)->y_balapub() );printf(" ");
+                    delete(*it);
+                    it = B.erase(it);
+                }
+            }
+
+            for(itCosito=A.begin();itCosito!=A.end();itCosito++){
+                (*itCosito)->mover();
+                (*itCosito)->chocar(cosa1);
+            }
+
+            for(itCosito=A.begin();itCosito!=A.end();itCosito++){
+                for(it=B.begin();it!=B.end();it++){
+                        if( (*itCosito)->x_cosopub()==(*it)->x_balapub()&&( (*itCosito)->y_cosopub()==(*it)->y_balapub() || (*itCosito)->y_cosopub()+1==(*it)->y_balapub() ) ){
+                            Sleep(1000);
+                            gotoxy((*it)->x_balapub(),(*it)->y_balapub());printf(" "); //elimina la bala de pantalla
+                            delete(*it);
+                            it = B.erase(it); //elimina la bala de la lista
+
+                            A.push_back(new COSOSQUECAEN( rand()%76+2,rand()%20+4  ));
+                             gotoxy((*itCosito)->x_cosopub(),(*itCosito)->y_cosopub());printf(" ");
+                             delete(*itCosito);
+                             itCosito=A.erase(itCosito);
+
+                            puntos++;
+
+                        }
+                }
+
+            }
+
+
+        if(cosa1.lifes_pub()==0){
+            game_over=true;
+        }
+
         cosa1.perder_vida();
         cosa1.mover();
 
-        Sleep(16);
+        Sleep(20);
     }
 
     return 0;
