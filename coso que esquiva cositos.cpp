@@ -272,7 +272,7 @@ void juego(){
             for(itCosito=A.begin();itCosito!=A.end();itCosito++){
                 for(it=B.begin();it!=B.end();it++){
                         if( (*itCosito)->x_cosopub()==(*it)->x_balapub()&&( (*itCosito)->y_cosopub()==(*it)->y_balapub() || (*itCosito)->y_cosopub()+1==(*it)->y_balapub() ) ){
-                            Sleep(1000);
+
                             gotoxy((*it)->x_balapub(),(*it)->y_balapub());printf(" "); //elimina la bala de pantalla
                             delete(*it);
                             it = B.erase(it); //elimina la bala de la lista
