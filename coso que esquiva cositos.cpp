@@ -5,6 +5,7 @@
 #include <list>
 #include <iostream>
 
+
 using namespace std;
 
 #define arriba 72
@@ -30,12 +31,12 @@ void eliminarCosito(){
     cci.bVisible=FALSE; //hace lo que dice su nombre
     SetConsoleCursorInfo(hCon, &cci); //hay que usar un & antes del parametro del cursor
 }
-class NAVE{
+class COSO{
 int x,y;
 int health;
 int lifes;
 public:
-    NAVE(int _x, int _y, int _health, int _lifes);
+    COSO(int _x, int _y, int _health, int _lifes);
     int x_navePublica(){return x;}
     int y_navePublica(){return y;}
     int lifes_pub(){return lifes;}
@@ -46,13 +47,13 @@ public:
     void perder_vida();
     void perder_health();
 };
-NAVE::NAVE(int _x, int _y, int _health, int _lifes){
+COSO::COSO(int _x, int _y, int _health, int _lifes){
 x=_x;
 y=_y;
 health=_health;
 lifes=_lifes;
 };
- void NAVE::perder_health(){
+ void COSO::perder_health(){
      health--;
     }
 
@@ -63,12 +64,12 @@ public:
     COSOSQUECAEN(int _x, int _y):x(_x),y(_y){}
         void pintar();
         void mover();
-        void chocar(class NAVE &cosita);
+        void chocar(class COSO &cosita);
         int x_cosopub(){return x;}
         int y_cosopub(){return y;}
 
 };
-void COSOSQUECAEN::chocar(class NAVE &cosita){
+void COSOSQUECAEN::chocar(class COSO &cosita){
     if(x>=cosita.x_navePublica()&& x<=cosita.x_navePublica()+2 && y>=cosita.y_navePublica() && y<=cosita.y_navePublica()+1){
         //Sleep(500);
         cosita.perder_health();
@@ -96,23 +97,24 @@ void COSOSQUECAEN::mover(){
 }
 
 
-void NAVE::dibujar(){
+void COSO::dibujar(){
     gotoxy(x,y);printf(" %c", 94);
     gotoxy(x,y+1);printf("%c%c%c", 201,202,187);
 };
-void NAVE::borrar(){
+void COSO::borrar(){
     gotoxy(x,y);printf("   ");
     gotoxy(x,y+1);printf("   ");
 };
-void NAVE::mover(){
-    if(kbhit()!=0){
-
-            char tecla=getch();
+void COSO::mover(){
+    if(kbhit()){
             borrar();
-            if((tecla=='a' || tecla==izquierda)&&x>2){x--;}
-            if((tecla=='d' || tecla==derecha)&&x<75){x++;}
-            if((tecla=='w' || tecla==arriba)&&y>2){y--;}
-            if((tecla=='s' || tecla==abajo) &&y<31){y++;}
+            char tecla=getch();
+            if(tecla==0)tecla=getch();
+
+            if((tecla==97 || tecla==izquierda)&& x>2){x--;};       //a=97
+            if((tecla==100 || tecla==derecha)&& x<75){x++;};        //d=100
+            if((tecla==119 || tecla==arriba)&& y>2){y--;};          //w=119
+            if((tecla==115 || tecla==abajo) && y<31){y++;};         //s=115
             if(tecla=='e' || tecla=='E')health--;
             dibujar();
             dibujar_vida();
@@ -135,7 +137,7 @@ void pintar_bordes(){
     gotoxy(78,1); printf("%c",187);
     gotoxy(78,33); printf("%c",188);
 };
-void NAVE::perder_vida(){
+void COSO::perder_vida(){
     if(health==0){
        borrar();
 
@@ -163,7 +165,7 @@ void NAVE::perder_vida(){
     }
 }
 
-void NAVE::dibujar_vida(){
+void COSO::dibujar_vida(){
     gotoxy(50,0);printf("Vidas: %d", lifes);
     gotoxy(65,0);printf("Health: ");
     gotoxy(73,0);printf("   ");
@@ -199,11 +201,18 @@ void finalJuego(){
 void prepararJuego();
 void juego();
 int menu();
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------ACA-ESTÁ-EL-MAIN-----------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 int main(){
-   // system("color 90");
+
+
+
+   system("color 06");
     system("mode con: cols=80 lines=35");
 menu();
 
@@ -220,12 +229,15 @@ finalJuego();
 
     return 0;
 }
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------ACA-ESTÁ-EL-MAIN-----------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void juego(){
-    NAVE cosa1(38,20,3,3);
+    COSO cosa1(38,20,3,3);
     cosa1.dibujar();
     cosa1.dibujar_vida();
 
@@ -297,7 +309,7 @@ void juego(){
         cosa1.perder_vida();
         cosa1.mover();
 
-        Sleep(20);
+        Sleep(30);
     }
 };
 void prepararJuego(){
